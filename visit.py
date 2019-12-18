@@ -1,6 +1,6 @@
 import re
 import math
-
+import numpy as np
 
 class reader:
     def __init__(self):
@@ -40,17 +40,10 @@ class reader:
                 self.data.append(self.value)
 
         return self.data
-
-
 class plot:
     def __init__(self, data):
-        self.data = data  # [col-1::18]
-        # self.index=0
+        self.data = data
         self.data_cart = []
-        # self.data_cart=[]
-        # self.size=size
-        # self.column=column
-
     def _hex_cornerX(self, centerX, i):
         self.centerX = centerX
         self.i = i
@@ -104,12 +97,9 @@ class plot:
 
         self.size = size
         self.data = self.data[col - 1::self._get_max_num(0)]
-        self.points = self._column(self.data, -1)  # 2+self.index)
-        # print(self.points)
+        self.points = self._column(self.data, -1)
         self.num = self._num_of_cells() + 1
-        # print(self.num)
         self.r = math.ceil(self._rings(self.num))
-        # print(self.r)
 
         self.stepX = self.size / 2 * math.cos(math.pi / 3)
         self.stepY = self.size / 2 * math.sin(math.pi / 3)
@@ -126,8 +116,7 @@ class plot:
         self.MaskPos = 0
         with open('2d.vtk', 'w', encoding='utf-8') as f:
             f.write("# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS " + str(
-                6 * self.num) + " float\n")  # str(len(points))
-            # print(self.r)
+                6 * self.num) + " float\n")
             for j in range(int(self.r)):
 
                 if (j == 0):
@@ -142,7 +131,7 @@ class plot:
                         self._hex_cornerY(self.centerY, 4)) + \
                             " 0.0\n" + str(self._hex_cornerX(self.centerX, 5)) + " " + str(
                         self._hex_cornerY(self.centerY, 5)) + \
-                            " 0.0\n")  # +str(points[index])+" 0.0" + "\n")
+                            " 0.0\n")
                     self.MaskPos += 1
                 for index in range(j * 3):
                     if self._check_mask(self.MaskPos):
@@ -157,9 +146,7 @@ class plot:
                             " 0.0\n" + str(self._hex_cornerX(self.centerX, 4)) + " " + str(
                                 self._hex_cornerY(self.centerY, 4)) + \
                             " 0.0\n" + str(self._hex_cornerX(self.centerX, 5)) + " " + str(
-                                self._hex_cornerY(self.centerY, 5)) + " 0.0\n")  # +str(points[index])+" 0.0" + "\n")
-                    # else:
-                    # print(1234567)
+                                self._hex_cornerY(self.centerY, 5)) + " 0.0\n")
                     if self._check_mask(self.MaskPos + 3 * j):
                         f.write(
                             str(-self._hex_cornerX(self.centerX, 0)) + " " + str(-self._hex_cornerY(self.centerY, 0)) + \
@@ -172,19 +159,17 @@ class plot:
                             " 0.0\n" + str(-self._hex_cornerX(self.centerX, 4)) + " " + str(
                                 -self._hex_cornerY(self.centerY, 4)) + \
                             " 0.0\n" + str(-self._hex_cornerX(self.centerX, 5)) + " " + str(
-                                -self._hex_cornerY(self.centerY, 5)) + " 0.0\n")  # +str(points[index])+" 0.0" + "\n")
-                    # else:
-                    # print(1234567)
+                                -self._hex_cornerY(self.centerY, 5)) + " 0.0\n")
                     self.MaskPos += 1
                     self.centerX -= self.width / 2
-                    self.centerY += self.vert + self.size / 4  # height/5#**2/3#-size**(3/2)#-size**(3/2)**2
+                    self.centerY += self.vert + self.size / 4
 
                     if (index >= j):
                         self.centerX -= self.width / 2
-                        self.centerY -= self.vert + self.size / 4  # height/5#**2/3#-size**(3/2)#-size**(3/2)**3/2
+                        self.centerY -= self.vert + self.size / 4
                     if (index >= 2 * j):
                         self.centerX += self.width / 2
-                        self.centerY -= self.vert + self.size / 4  # height/5#**2/3#-size**(3/2)#-size**(3/2)**3/2
+                        self.centerY -= self.vert + self.size / 4
                 self.MaskPos += 3 * j
                 self.shiftX += self.width
                 self.centerX = self.shiftX
@@ -203,33 +188,115 @@ class plot:
                         f.write(str(self.points[self.k]) + "\n")
                     if self._check_mask(self.k + 3 * j):
                         f.write(str(self.points[self.k + 3 * j]) + "\n")
-                    #                     else:
-                    #                         print(123)
                     self.k += 1
                 self.k += 3 * j
-
-    def plt2d_1(self, i):
-        self.i = i
-        # print(self.data)
-        self.data = self.data[self._get_max_num(1) * (self.i - 1):self._get_max_num(1) * self.i]
-        # print(self.data)
-        self.plt1d_1()
-
-    def plt1d_1(self):
-        self.points = self._column(self.data, -1)
-        # print(self.points)
+    def _data1d(self,x):
+        self.data_show=[]
+        if type(x)==int:
+            self.dataX=[]
+            for i in range(len(self.data)):
+                if x==int(self.data[i][0]):
+                    self.data_show.append(self.data[i])
+        else:
+            for j in range(len(x)):
+                for i in range(len(self.data)):
+                    if x[j]==int(self.data[i][0]):
+                        self.data_show.append(self.data[i])
+        return self.data_show
+    def _data2d(self,x,y):
+        self.data_show=[]
+        if type(x)==int:
+            self.dataX=[]
+            for i in range(len(self.data)):
+                if x==int(self.data[i][0]):
+                    self.dataX.append(self.data[i])
+            if type(y)==int:
+                for i in range(len(self.dataX)):
+                    if y==int(self.dataX[i][1]):
+                        self.data_show.append(self.dataX[i])
+            else:
+                for j in range(len(y)):
+                        for i in range(len(self.dataX)):
+                            if y[j]==int(self.dataX[i][1]):
+                                self.data_show.append(self.dataX[i])
+        else:
+            self.dataX=[]
+            for j in range(len(x)):
+                for i in range(len(self.data)):
+                    if x[j]==int(self.data[i][0]):
+                        self.dataX.append(self.data[i])
+            for i in range(len(self.dataX)):
+                if y==int(self.dataX[i][1]):
+                    self.data_show.append(self.dataX[i])
+        return self.data_show
+    def _data3d(self,x,y,z):
+        self.data_show=[]
+        if type(x)==int:
+            self.dataX=[]
+            for i in range(len(self.data)):
+                if x==int(self.data[i][0]):
+                    self.dataX.append(self.data[i])
+            if type(y)==int:
+                self.dataXY=[]
+                for i in range(len(self.dataX)):
+                    if y==int(self.dataX[i][1]):
+                        self.dataXY.append(self.dataX[i])
+                if type(z)==int:
+                    for i in range(len(self.dataXY)):
+                        if z==int(self.dataXY[i][2]):
+                            self.data_show.append(self.dataXY[i])
+                else:
+                    for j in range(len(z)):
+                        for i in range(len(self.dataXY)):
+                            if z[j]==int(self.dataXY[i][2]):
+                                self.data_show.append(self.dataXY[i])
+            else:
+                self.dataXY=[]
+                for j in range(len(y)):
+                        for i in range(len(self.dataX)):
+                            if y[j]==int(self.dataX[i][1]):
+                                self.dataXY.append(self.dataX[i])
+                for i in range(len(self.dataXY)):
+                    if z==int(self.dataXY[i][2]):
+                        self.data_show.append(self.dataXY[i])
+        else:
+            self.dataX=[]
+            for j in range(len(x)):
+                for i in range(len(self.data)):
+                    if x[j]==int(self.data[i][0]):
+                        self.dataX.append(self.data[i])
+                self.dataXY=[]
+            for i in range(len(self.dataX)):
+                if y==int(self.dataX[i][1]):
+                    self.dataXY.append(self.dataX[i])
+            for i in range(len(self.dataXY)):
+                if z==int(self.dataXY[i][2]):
+                    self.data_show.append(self.dataXY[i])
+        return self.data_show
+    def plt1d_1(self,*ind):
+        #print(len(ind[2]))
+        if len(ind)==3:
+            self.data_show=self._data3d(ind[0],ind[1],ind[2])
+        elif len(ind)==2:
+            self.data_show=self._data2d(ind[0],ind[1])
+        elif len(ind)==1:
+            self.data_show=self._data1d(ind[0])
+        else:
+            return -1
+        print(self.data_show)
+        self._read_cart()
+        self.points = self._column(self.data_show, -1)
         with open('1d.vtk', 'w', encoding='utf-8') as f:
             f.write("# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS " + str(
                 len(self.points)) + " float\n")
             for index in range(len(self.points)):
-                if index == 0:
-                    f.write(str(index) + "0.0 " + str(self.points[index]) + " 0.0" + "\n")
+                if index == 0 :
+                    f.write(str(index) + ".0 " + str(self.points[index]) + " 0.0" + "\n")
                 else:
                     f.write(str(index) + "0.0 " + str(self.points[index]) + " 0.0" + "\n")
-            f.write("LINES " + str(len(self.points) - 1) + " " + str(2 * len(self.points)) + "\n")
-            for index in range(len(self.points) - 1):
+            f.write("LINES " + str(len(self.data_show) - 1) + " " + str(3 * (len(self.data_show)-1)) + "\n")
+            for index in range(len(self.data_show) - 1):
                 f.write("2" + " " + str(index) + " " + str(index + 1) + "\n")
-
     def plt3d_2(self, col3d, col2d, size):
         self.col3d = col3d
         self.col2d = col2d
@@ -238,11 +305,3 @@ class plot:
                     (self.col3d - 1) * self._get_max_num(1) * self._get_max_num(0):self.col3d * self._get_max_num(
                         1) * self._get_max_num(0):1]
         self.plt2d_2(self.size, self.col2d)
-
-    def plt3d_1(self, col3d, col1d):
-        self.col3d = col3d
-        self.col1d = col1d
-        self.data = self.data[
-                    (self.col3d - 1) * self._get_max_num(1) * self._get_max_num(0):self.col3d * self._get_max_num(
-                        1) * self._get_max_num(0):1]
-        self.plt2d_1(self.col1d)
