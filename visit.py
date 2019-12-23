@@ -43,9 +43,9 @@ class reader:
 
 
 class plot:
-    def __init__(self, data):
+    def __init__(self, data,data_cart):
         self.data = data
-        self.data_cart = []
+        self.data_cart = data_cart
     def _hex_cornerX(self, centerX, i):# X координата шестиугольника
         self.centerX = centerX
         self.i = i
@@ -60,10 +60,6 @@ class plot:
             while self.max < int(self.data[index][i]):
                 self.max = int(self.data[index][i])
         return self.max
-
-    def _read_cart(self):#читаем картограмму
-        self.readcart = reader()
-        self.data_cart = self.readcart._read_cart("./Cart.txt")
 
     def _check_mask(self, maskPos):# проверка номера на наличие в картограмме
         for i in range(round(len(self.data_cart) / 6)):
@@ -131,7 +127,6 @@ class plot:
                 self.data_show.append(self.dataX[i])       
         return self.data_show         
     def plt2d(self,size,*ind):#2д отрисовка
-        self._read_cart()
         self.data_show = []
         if len(ind) == 2:# проверяем аргументы и возвращаем данные для отрисовки
             self.data_show=self._data3d_2d(ind[0],ind[1])   
@@ -340,7 +335,6 @@ class plot:
         else:
             return -1
         print(self.data_show)        
-        self._read_cart()
         self.points = self._column(self.data_show, -1)
         with open('1d.vtk', 'w', encoding='utf-8') as f:
             f.write("# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS " + str(
