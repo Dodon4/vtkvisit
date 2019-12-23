@@ -1,29 +1,39 @@
 #2d на 1d
 read_sel2d=reader()
 data2d=read_sel2d.read_sel("./2d.sel")
-plt=plot(data2d)
-plt.plt1d(6,np.arange(2,6))
+readcart = reader()
+data_cart = readcart._read_cart("./Cart.txt")
+plt=plot(data2d,data_cart)
+plt.plt1d(6)
 
 #2d на 2d
 read_sel2d=reader()
 data2d=read_sel2d.read_sel("./2d.sel")
-plt=plot(data2d)
+readcart = reader()
+data_cart = readcart._read_cart("./Cart.txt")
+plt=plot(data2d,data_cart)
 plt.plt2d(10,1)
 
 #1d
 read_sel1d=reader()
 data_1d=read_sel1d.read_sel("./1d.sel")
-plt_1d=plot(data_1d)
+readcart = reader()
+data_cart = readcart._read_cart("./Cart.txt")
+plt_1d=plot(data_1d,data_cart)
 plt_1d.plt1d()
 
 #3d на 2d
 read_sel3d=reader()
 data_3d=read_sel3d.read_sel("./3d.sel")
-plt_3d_2d=plot(data_3d)
+readcart = reader()
+data_cart = readcart._read_cart("./Cart.txt")
+plt_3d_2d=plot(data_3d,data_cart)
 plt_3d_2d.plt2d(10,1,2)
 
 #3d на 1d
 read_sel3d=reader()
 data_3d=read_sel3d.read_sel("./3d.sel")
-plt_3d_1d=plot(data_3d)
-plt_3d_1d.plt1d(2,2,[1,2,4,6])
+readcart = reader()
+data_cart = readcart._read_cart("./Cart.txt")
+plt_3d_1d=plot(data_3d,data_cart)
+plt_3d_1d.plt1d(2,2)
